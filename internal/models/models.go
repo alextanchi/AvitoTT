@@ -21,3 +21,33 @@ type Content struct {
 	Text  string `json:"text"`
 	Url   string `json:"url"`
 }
+
+type BannerListFilter struct {
+	Limit     uint64
+	Offset    uint64
+	FeatureId *int
+	TagId     *int
+}
+
+type BannerByFeatureAndTag struct {
+	Id        int
+	Title     string
+	Text      string
+	Url       string
+	IsActive  bool
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	FeatureId int
+	TagId     int
+}
+
+type UserBannerFilter struct {
+	FeatureId       int
+	TagId           int
+	UseLastRevision *bool
+}
+type UserBannerResponse struct {
+	Title string
+	Text  string
+	Url   string
+}
