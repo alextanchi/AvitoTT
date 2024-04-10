@@ -93,7 +93,7 @@ func (b Banner) DeleteBannerById(ctx context.Context, id int) error {
 	return nil
 }
 
-func (b Banner) GetBanner(ctx context.Context, tag domain.Tag, feature domain.Feature) error {
+func (b Banner) GetBanner(ctx context.Context, input models.UserBannerFilter) (domain.Banner, error) {
 
 }
 

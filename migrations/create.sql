@@ -8,7 +8,7 @@ CREATE TABLE banner
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
     feature_id int                      NOT NULL,
-    CONSTRAINT banner_pkey PRIMARY KEY (id),/* устанавливаем ограничение на столбец id,                                           это первичный ключ который будет уникальным*/
+    CONSTRAINT banner_pkey PRIMARY KEY (id),
     CONSTRAINT feature_fk
         FOREIGN KEY (feature_id)
             REFERENCES feature (id)
