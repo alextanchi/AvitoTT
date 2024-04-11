@@ -159,3 +159,25 @@ func (b Banner) GetBannersByFeatureAndTag(ctx context.Context, filter models.Ban
 
 	return result, nil
 }
+
+func (b Banner) UpdateBannerById(ctx context.Context, banner domain.Banner) error {
+
+	updateQuery := sq.Update("banner").
+		Set("title", title).
+		Set("text", text).
+		Set("url", url).
+		Set("is_active", isActive).
+		Where(sq.Eq{"id": id}).
+		PlaceholderFormat(sq.Dollar)
+
+	query, args, err := udpateQuery.ToSql()
+	if err != nil {
+		return err
+	}
+	_, err = b.db.ExecContext(ctx, query, args...)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
