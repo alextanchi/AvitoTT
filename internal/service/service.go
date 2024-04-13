@@ -1,6 +1,7 @@
 package service
 
 import (
+	"AvitoTestTask/internal/cache"
 	"AvitoTestTask/internal/convert"
 	"AvitoTestTask/internal/domain"
 	"AvitoTestTask/internal/models"
@@ -9,49 +10,61 @@ import (
 )
 
 type Service interface {
-	CreateBanner(ctx context.Context, banner domain.Banner) (int, error)
+	CreateBanner(ctx context.Context, banner models.CreateBannerRequest) (int, error)
 	DeleteBannerById(ctx context.Context, id int) error
 	GetBanner(ctx context.Context, input models.UserBannerFilter) (domain.Banner, error)
 	GetBannersByFeatureAndTag(ctx context.Context, filter models.BannerListFilter) ([]models.BannerByFeatureAndTag, error)
-	UpdateBannerById(ctx context.Context, banner domain.Banner, request models.BannerUpdateById) error
+	UpdateBannerById(ctx context.Context, request models.BannerUpdateById) error
 }
 type BannerService struct {
 	storage repository.Repository
+	cache   cache.IBannerCache
 }
 
 func NewService(repos repository.Repository) Service {
-
 	return BannerService{
 		storage: repos,
 	}
 }
 
-func (b BannerService) CreateBanner(ctx context.Context, banner domain.Banner) (int, error) {
-	return b.storage.CreateBanner(ctx, banner)
+func (b BannerService) CreateBanner(ctx context.Context, banner models.CreateBannerRequest) (int, error) {
+	id, err := b.storage.CreateBanner(ctx, convert.CreateBannerRequestBannerDomainToModel(banner))
+	if err != nil {
+		return 0, err
+	}
+	err = b.storage.SetTags(ctx, convert.BannerToTag(models.BannerUpdateById{
+		TagIds:   banner.TagIds,
+		BannerId: id,
+	}))
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
 
 }
 
 func (b BannerService) DeleteBannerById(ctx context.Context, id int) error {
 	return b.storage.DeleteBannerById(ctx, id)
-
 }
 
 func (b BannerService) GetBanner(ctx context.Context, input models.UserBannerFilter) (domain.Banner, error) {
-
-	//поменять параметры и обработать if *input.UseLastRevision { когда флаг прилетает, что делаем?
-
-	b.storage.GetBanner()
-
+	if input.UseLastRevision != nil {
+		if *input.UseLastRevision == true {
+			result, err := b.storage.GetBanner(ctx, input)
+			if err != nil {
+				return domain.Banner{}, err
+			}
+			return result, nil
+		}
+	}
+	return b.cache.Get(models.UserBannerKey{
+		FeatureId: input.FeatureId,
+		TagId:     input.TagId,
+	})
 }
 
 func (b BannerService) GetBannersByFeatureAndTag(ctx context.Context, filter models.BannerListFilter) ([]models.BannerByFeatureAndTag, error) {
-	result, err := b.storage.GetBannersByFeatureAndTag(ctx, filter)
-	if err != nil {
-		return []models.BannerByFeatureAndTag{}, err
-	}
-
-	return result, nil
-
+	return b.storage.GetBannersByFeatureAndTag(ctx, filter)
 }
 
 func (b BannerService) UpdateBannerById(ctx context.Context, request models.BannerUpdateById) error {
@@ -67,6 +80,5 @@ func (b BannerService) UpdateBannerById(ctx context.Context, request models.Bann
 	if err != nil {
 		return err
 	}
-
 	return nil
 }

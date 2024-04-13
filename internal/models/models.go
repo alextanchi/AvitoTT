@@ -7,9 +7,9 @@ type Banner struct {
 	TagIds    []Tag     `json:"tag_ids"`
 	FeatureId int       `json:"feature_id"`
 	Content   Content   `json:"content"`
+	IsActive  bool      `json:"is_active"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
-	IsActive  bool      `json:"is_active"`
 }
 
 type Tag struct {
@@ -23,22 +23,22 @@ type Content struct {
 }
 
 type BannerListFilter struct {
-	Limit     uint64
-	Offset    uint64
-	FeatureId *int
-	TagId     *int
+	Limit     uint64 `json:"limit"`
+	Offset    uint64 `json:"offset"`
+	FeatureId *int   `json:"featureId"`
+	TagId     *int   `json:"tagId"`
 }
 
-type BannerByFeatureAndTag struct {
-	Id        int
-	Title     string
-	Text      string
-	Url       string
-	IsActive  bool
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	FeatureId int
-	TagId     int
+type BannerInfo struct {
+	Id        int       `json:"id"`
+	Title     string    `json:"title"`
+	Text      string    `json:"text"`
+	Url       string    `json:"url"`
+	IsActive  bool      `json:"isActive"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
+	FeatureId int       `json:"featureId"`
+	TagId     []int     `json:"tagId"`
 }
 
 type UserBannerFilter struct {
@@ -46,8 +46,39 @@ type UserBannerFilter struct {
 	TagId           int
 	UseLastRevision *bool
 }
-type UserBannerResponse struct {
-	Title string
-	Text  string
-	Url   string
+
+type BannerUpdateById struct {
+	BannerId  int     `json:"banner_id"`
+	TagIds    []int   `json:"tag_ids"`
+	FeatureId int     `json:"feature_id"`
+	Content   Content `json:"content"`
+	IsActive  bool    `json:"is_active"`
+}
+
+type CreateBannerRequest struct {
+	TagIds    []int   `json:"tag_ids"`
+	FeatureId int     `json:"feature_id"`
+	Content   Content `json:"content"`
+	IsActive  bool    `json:"is_active"`
+}
+
+type CreateBannerResponse struct {
+	BannerId int `json:"banner_id"`
+}
+
+type UserBannerKey struct {
+	FeatureId int
+	TagId     int
+}
+
+type BannerByFeatureAndTag struct {
+	Id        int       `json:"id"`
+	Title     string    `json:"title"`
+	Text      string    `json:"text"`
+	Url       string    `json:"url"`
+	IsActive  bool      `json:"isActive"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
+	FeatureId int       `json:"featureId"`
+	TagId     int       `json:"tagId"`
 }

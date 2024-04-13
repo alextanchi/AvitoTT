@@ -19,6 +19,8 @@ type Repository interface {
 
 	DeleteTagByBannerId(ctx context.Context, id int) error
 	SetTags(ctx context.Context, tag []domain.Tag) error
+	GetAllBanners(ctx context.Context) ([]models.BannerInfo, error)
+	GetRole(ctx context.Context, userId string) (string, error)
 }
 
 type Banner struct {
@@ -47,9 +49,8 @@ func ConnectDb() (*sql.DB, error) {
 
 func (b Banner) CreateBanner(ctx context.Context, banner domain.Banner) (int, error) {
 
-	query, args, err := sq.
+	query := sq.
 		Insert(tableBanner).Columns(
-		"id",
 		"title",
 		"text",
 		"url",
@@ -59,7 +60,6 @@ func (b Banner) CreateBanner(ctx context.Context, banner domain.Banner) (int, er
 		"feature_id",
 	).
 		Values(
-			banner.Id,
 			banner.Title,
 			banner.Text,
 			banner.Url,
@@ -68,16 +68,16 @@ func (b Banner) CreateBanner(ctx context.Context, banner domain.Banner) (int, er
 			banner.UpdatedAt,
 			banner.FeatureId,
 		).
-		PlaceholderFormat(sq.Dollar).
-		ToSql()
+		Suffix("RETURNING \"id\"").
+		RunWith(b.db).
+		PlaceholderFormat(sq.Dollar)
+	var id int
+	err := query.QueryRow().Scan(&id)
+
 	if err != nil {
 		return 0, err
 	}
-	_, err = b.db.ExecContext(ctx, query, args...)
-	if err != nil {
-		return 0, err
-	}
-	return banner.Id, nil
+	return id, nil
 
 }
 
@@ -279,4 +279,87 @@ func (b Banner) SetTags(ctx context.Context, tag []domain.Tag) error {
 	}
 
 	return nil
+}
+
+func (b Banner) GetAllBanners(ctx context.Context) ([]models.BannerInfo, error) {
+	result := make([]models.BannerInfo, 0)
+	queryBuilder := sq.
+		Select(
+			"b.id",
+			"b.title",
+			"b.text",
+			"b.url",
+			"b.is_active",
+			"b.created_at",
+			"b.updated_at",
+			"f.id",
+			"t.id",
+		).
+		From("banner b").
+		Join("feature f ON b.feature_id = f.id").
+		Join("tag t ON b.id = t.banner_id").
+		PlaceholderFormat(sq.Dollar)
+
+	query, args, err := queryBuilder.ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := b.db.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var banner models.BannerInfo
+		err := rows.Scan(
+			&banner.Id,
+			&banner.Title,
+			&banner.Text,
+			&banner.Url,
+			&banner.IsActive,
+			&banner.CreatedAt,
+			&banner.UpdatedAt,
+			&banner.FeatureId,
+			&banner.TagId,
+		)
+		if err == sql.ErrNoRows {
+			return []models.BannerInfo{}, nil
+		}
+		if err != nil {
+			return nil, err
+		}
+
+		result = append(result, banner)
+	}
+
+	return result, nil
+}
+
+func (b Banner) GetRole(ctx context.Context, userId string) (string, error) {
+	selectQuery := sq.Select(
+		"role",
+	).
+		From(tableRole).
+		Where(sq.Eq{"user_id": userId})
+
+	query, args, err := selectQuery.ToSql()
+	if err != nil {
+		return "", err
+	}
+	rows, err := b.db.QueryContext(ctx, query, args...)
+	if err != nil {
+		return "", err
+	}
+
+	var role string
+	for rows.Next() {
+		err := rows.Scan(
+			&role,
+		)
+		if err != nil {
+			return "", err
+		}
+	}
+	return role, nil
 }
