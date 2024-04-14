@@ -1,8 +1,9 @@
 Что не сделано: 
 1. "Реализуйте интеграционный или E2E-тест на сценарий получения баннера".
-2. Не создан makefile
-Для запуска докера docker-compose up
-docker поднимает базу
+2. Не создан makefile \
+
+Для запуска докера docker-compose up\
+docker поднимает базу\
 Запуск: go run main.go
 
 Токен для юзера: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwidXNlcklkIjoiM2IxYjE5ZjMtNDU1ZC00NzRkLTkyZmMtNjVhNzY1NTFiMTZmIiwiaWF0IjoxNTE2MjM5MDIyfQ.fW4mz71VDG3_EJAbdprRRslUeHzby4GZmVoceqI0zBM \
