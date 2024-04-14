@@ -115,7 +115,6 @@ func (b Banner) GetBanner(ctx context.Context, input models.UserBannerFilter) (d
 		Where(sq.Eq{"t.id": input.TagId}).
 		PlaceholderFormat(sq.Dollar)
 	query, args, err := selectQuery.ToSql()
-	log.Println(query)
 	if err != nil {
 		return domain.Banner{}, err
 	}
@@ -161,7 +160,7 @@ func (b Banner) GetBannersByFeatureAndTag(ctx context.Context, filter models.Ban
 		).
 		From("banner b").
 		Join("feature f ON b.feature_id = f.id").
-		Join("tag t ON b.id = t.banner_id").
+		RightJoin("tag t ON b.id = t.banner_id").
 		OrderBy("b.id").
 		Limit(filter.Limit).
 		Offset(filter.Offset).
@@ -326,7 +325,8 @@ func (b Banner) GetRole(ctx context.Context, userId string) (string, error) {
 		"role",
 	).
 		From(tableRole).
-		Where(sq.Eq{"user_id": userId})
+		Where(sq.Eq{"user_id": userId}).
+		PlaceholderFormat(sq.Dollar)
 	query, args, err := selectQuery.ToSql()
 	if err != nil {
 		return "", err

@@ -7,7 +7,6 @@ import (
 	"AvitoTestTask/internal/models"
 	"AvitoTestTask/internal/repository"
 	"context"
-	"log"
 )
 
 type Service interface {
@@ -59,7 +58,6 @@ func (b BannerService) GetBanner(ctx context.Context, input models.UserBannerFil
 			return result, nil
 		}
 	}
-	log.Println("service-GetBanner-checkpoint-1")
 	return b.cache.Get(models.UserBannerKey{
 		FeatureId: input.FeatureId,
 		TagId:     input.TagId,

@@ -5,7 +5,6 @@ CREATE TABLE feature
 
 );
 
-
 CREATE TABLE banner
 (
     id         serial,
@@ -23,7 +22,6 @@ CREATE TABLE banner
 
 );
 
-
 CREATE TABLE tag
 (
     id        int NOT NULL,
@@ -40,3 +38,12 @@ CREATE TABLE role
     role    varchar NOT NULL
 
 );
+
+INSERT INTO feature (id)
+VALUES (1),(2),(3)
+        ;
+
+INSERT INTO role (user_id, role)
+VALUES ('3b1b19f3-455d-474d-92fc-65a76551b16f', 'user'),
+    ('0d97e23b-089b-4237-9c2c-d1e100576920', 'admin')
+;

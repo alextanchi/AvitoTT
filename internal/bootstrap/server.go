@@ -33,19 +33,19 @@ func (s Server) InitRoutes() *gin.Engine {
 	router := gin.New()
 
 	router.GET("/user_banner",
-		//s.mdw.Authorization(), s.mdw.CheckRole(false),
+		s.mdw.Authorization(), s.mdw.CheckRole(false),
 		s.cnt.GetBanner)
 	router.GET("/banner",
-		//s.mdw.Authorization(), s.mdw.CheckRole(true),
+		s.mdw.Authorization(), s.mdw.CheckRole(true),
 		s.cnt.GetBannersByFeatureAndTag)
 	router.POST("/banner",
-		//s.mdw.Authorization(), s.mdw.CheckRole(true),
+		s.mdw.Authorization(), s.mdw.CheckRole(true),
 		s.cnt.CreateBanner)
 	router.PATCH("/banner/:id",
-		//s.mdw.Authorization(), s.mdw.CheckRole(true),
+		s.mdw.Authorization(), s.mdw.CheckRole(true),
 		s.cnt.UpdateBannerById)
 	router.DELETE("/banner/:id",
-		//	s.mdw.Authorization(), s.mdw.CheckRole(true),
+		s.mdw.Authorization(), s.mdw.CheckRole(true),
 		s.cnt.DeleteBannerById)
 
 	return router
