@@ -1,6 +1,14 @@
+CREATE TABLE feature
+(
+    id int NOT NULL,
+    CONSTRAINT feature_pkey PRIMARY KEY (id)
+
+);
+
+
 CREATE TABLE banner
 (
-    id         int                      NOT NULL,
+    id         serial,
     title      varchar                  NOT NULL,
     text       varchar                  NOT NULL,
     url        varchar                  NOT NULL,
@@ -15,23 +23,15 @@ CREATE TABLE banner
 
 );
 
-CREATE TABLE feature
-(
-    id int NOT NULL,
-    CONSTRAINT feature_pkey PRIMARY KEY (id)
-
-);
-
 
 CREATE TABLE tag
 (
     id        int NOT NULL,
     banner_id int NOT NULL,
-
-    CONSTRAINT tag_pkey PRIMARY KEY (id),
     CONSTRAINT tag_fk
         FOREIGN KEY (banner_id)
             REFERENCES banner (id)
+            ON DELETE CASCADE
 );
 
 CREATE TABLE role

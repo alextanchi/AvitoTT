@@ -7,6 +7,7 @@ import (
 	"AvitoTestTask/internal/models"
 	"AvitoTestTask/internal/repository"
 	"context"
+	"log"
 )
 
 type Service interface {
@@ -21,9 +22,10 @@ type BannerService struct {
 	cache   cache.IBannerCache
 }
 
-func NewService(repos repository.Repository) Service {
+func NewService(repos repository.Repository, bannerCache cache.IBannerCache) Service {
 	return BannerService{
 		storage: repos,
+		cache:   bannerCache,
 	}
 }
 
@@ -57,10 +59,12 @@ func (b BannerService) GetBanner(ctx context.Context, input models.UserBannerFil
 			return result, nil
 		}
 	}
+	log.Println("service-GetBanner-checkpoint-1")
 	return b.cache.Get(models.UserBannerKey{
 		FeatureId: input.FeatureId,
 		TagId:     input.TagId,
 	})
+
 }
 
 func (b BannerService) GetBannersByFeatureAndTag(ctx context.Context, filter models.BannerListFilter) ([]models.BannerByFeatureAndTag, error) {

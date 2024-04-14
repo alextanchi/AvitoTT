@@ -29,18 +29,6 @@ type BannerListFilter struct {
 	TagId     *int   `json:"tagId"`
 }
 
-type BannerInfo struct {
-	Id        int       `json:"id"`
-	Title     string    `json:"title"`
-	Text      string    `json:"text"`
-	Url       string    `json:"url"`
-	IsActive  bool      `json:"isActive"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
-	FeatureId int       `json:"featureId"`
-	TagId     []int     `json:"tagId"`
-}
-
 type UserBannerFilter struct {
 	FeatureId       int
 	TagId           int
